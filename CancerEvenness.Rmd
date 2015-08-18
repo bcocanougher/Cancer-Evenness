@@ -5,7 +5,7 @@ date: "August 17, 2015"
 output: html_document
 ---
 
-The data used for this analysis comes from the [International Agency for Research on Cancer](http://ci5.iarc.fr/CI5I-X/Pages/download.aspx). Specifically we will look at the yellow volume VII data. The CI5VII.csv file can be downloaded [here](http://ci5.iarc.fr/CI5I-X/old/vol7/CI5-VII_software.zip) from the IARC. Alternatively, the files, including this analysis, are available in this github repo.
+The data used for this analysis comes from the [International Agency for Research on Cancer](http://ci5.iarc.fr/CI5I-X/Pages/download.aspx). Specifically we will look at the yellow volume VII data. The CI5VII.csv file can be downloaded [here](http://ci5.iarc.fr/CI5I-X/old/vol7/CI5-VII_software.zip) from the IARC. Alternatively, the files, including this analysis, are available in this [github repo](https://github.com/bcoke/Cancer-Evenness).
 
 
 ```{r, echo = TRUE, cache=TRUE}
