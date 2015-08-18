@@ -1,0 +1,68 @@
+---
+title: "Cancer Evenness Replication"
+author: "Benjamin Cocanougher"
+date: "August 17, 2015"
+output: html_document
+---
+
+The data used for this analysis comes from the [International Agency for Research on Cancer](http://ci5.iarc.fr/CI5I-X/Pages/download.aspx). Specifically we will look at the yellow volume VII data. The CI5VII.csv file can be downloaded [here](http://ci5.iarc.fr/CI5I-X/old/vol7/CI5-VII_software.zip) from the IARC. Alternatively, the files, including this analysis, are available in this github repo.
+
+
+```{r, echo = TRUE, cache=TRUE}
+
+# You will need to edit this to the working 
+# directory containing the CI5VII.csv file
+setwd("/Users/bencocanougher/Desktop/CI5-VIId")
+
+if (!exists("cancer")) {
+  cancer <- read.csv("CI5VII.csv")
+}
+
+colnames(cancer) <- c("pop", "sex", "cancer", "ageGroup",
+                      "cancerByAge", "PersonYearsatRisk")
+
+str(cancer)
+```
+
+GetEvenness function is defined:
+```{r}
+GetEvenness <- function(vector) {
+  n <- sum(vector)
+  s <- length(vector)
+  print("", quote = F)
+  print(c("sum:",n), quote = F)
+  print(c("s:",s), quote = F)
+  # Basharin's small-sample correction:
+  ens <- (s-1)/(2*log(2)*n);
+  H <- -sum((vector/n)*log2(vector/n)) + ens
+  Hmax <- log2(s) 
+  H/Hmax
+  #print(c("evenness:", round(H/Hmax,3)), quote = F)
+}
+```
+
+Next I define a function to subset the data and calculate the evenness.
+
+```{r}
+CancerEvenness <- function(ageGroupID) {
+  # First subset the cancer data frame by the ageGroup column
+  x <- cancer[cancer$ageGroup == ageGroupID, ]
+  
+  # Then sum all of the data by cancer type
+  x2 <- aggregate(. ~ cancer, data = x, FUN=sum)
+  
+  # Remove cancer types with no data (non-existant 
+  # species in population of interest)
+  x3 <- x2$cancerByAge[which(x2$cancerByAge != 0)]
+  
+  # Calculate the evenness and print to the console
+  x4 <- GetEvenness(x3)
+  print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
+}
+```
+
+
+With the above function, we can now easily calculate the evenness for each age group.
+```{r}
+x <- lapply(1:19, CancerEvenness)
+```
