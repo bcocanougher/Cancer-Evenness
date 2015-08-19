@@ -1,6 +1,0 @@
-First column is population number (see population dictionary)
-Second column is sex (1 Male/2 Female)
-Third column is cancer number (see cancer dictionary)
-Fourth column is age (1-19: 0-4,5-9,..,85+,unknown age)
-Fifth column is number of cancer cases by age
-Sixth column is person-years at risk by age

@@ -1,30 +1,55 @@
 ---
 title: "Cancer Evenness Replication"
 author: "Benjamin Cocanougher"
-date: "August 17, 2015"
+date: "August 19, 2015"
 output: html_document
 ---
+##Introduction:
+Large epidemiological datasets are available for analyzing the types and rates of cancer worldwide. This analysis will attempt to apply information theory to epidemiology.
 
+<<<<<<< HEAD
+I will be using equations derived by [Thomas Schneider](http://alum.mit.edu/www/toms) to calculate the equivalent of ecological evenness. In this analysis I am considering the population to be cancer types and number of individual species in the population to be number of cases of each cancer type.
+=======
 The data used for this analysis comes from the [International Agency for Research on Cancer](http://ci5.iarc.fr/CI5I-X/Pages/download.aspx). Specifically we will look at the yellow volume VII data. The CI5VII.csv file can be downloaded [here](http://ci5.iarc.fr/CI5I-X/old/vol7/CI5-VII_software.zip) from the IARC. Alternatively, the files, including this analysis, are available in this [github repo](https://github.com/bcoke/Cancer-Evenness).
+>>>>>>> parent of b275c02... Fixed link to data
 
+##Data Analysis:
+The data used for this analysis comes from the [International Agency for Research on Cancer](http://ci5.iarc.fr/CI5I-X/Pages/download.aspx). Specifically we will look at the most recent volume X data. The Volume X data can be downloaded from the IARC by clicking [here](http://ci5.iarc.fr/CI5-X/CI5-Xd.zip). The data from the downloaded file will contain a larger number of small .csv files.
+
+The huge list of .csv files in the IARC data was converted to a single .csv file using the following unix command after changing to the directory containing the files:
+
+cat *.csv > CI5Xd.csv
+
+(The files can also be read directly into R, but it is much slower.)
+
+You can either collapse the files together yourself using the above command, or grab the combined files from the [github repo](https://github.com/bcoke/Cancer-Evenness).
+
+
+First we need to read the data into R.
 
 ```{r, echo = TRUE, cache=TRUE}
 
 # You will need to edit this to the working 
+<<<<<<< HEAD
+# directory containing the CI5Xd.csv file
+setwd("/Users/bencocanougher/Desktop/")
+=======
 # directory containing the CI5VII.csv file
 setwd("/Users/bencocanougher/Desktop/CI5-VIId")
+>>>>>>> parent of b275c02... Fixed link to data
 
-if (!exists("cancer")) {
-  cancer <- read.csv("CI5VII.csv")
+if (!exists("cancerX")) {
+  cancerX <- read.csv("CI5Xd.csv")
 }
 
-colnames(cancer) <- c("pop", "sex", "cancer", "ageGroup",
-                      "cancerByAge", "PersonYearsatRisk")
+colnames(cancerX) <- c("sex", "cancerSite", "ageGroup",
+                       "numberOfCases", "PersonYearsAtRisk")
 
-str(cancer)
+str(cancerX)
 ```
 
 GetEvenness function is defined:
+
 ```{r}
 GetEvenness <- function(vector) {
   n <- sum(vector)
@@ -41,28 +66,113 @@ GetEvenness <- function(vector) {
 }
 ```
 
-Next I define a function to subset the data and calculate the evenness.
+A description of the code describing the cancerSite integers can be found [here](http://ci5.iarc.fr/CI5I-X/Pages/cancer_vol10.aspx). It is a list of ICD-10 codes that were converted to the cancerSite vector identifiers. These idenfiers include several many summation codes, and thus must be subset appropriately.
+
+
+##Evenness of 15 Organ Categories is near 80%
+The following code chunk subsets the ID codes into 15 big categories, which correspond to cancer incidence at the organ level.
 
 ```{r}
-CancerEvenness <- function(ageGroupID) {
+# Helper Function
+CancerCleaning <- function(site) {
+  which(cancerX$cancerSite == site)
+}
+
+# vector to be used in function
+vector <- c(3, 22, 72, 89, 99, 107, 113, 114, 149,
+            159, 173, 199, 212, 242, 243)
+
+# Create the desired data frame outside of the function
+z <- unlist(lapply(vector, CancerCleaning))
+cancerX2 <- cancerX[z, c(2:4)]
+
+CancerEvennessX <- function(ageGroupID) {
   # First subset the cancer data frame by the ageGroup column
-  x <- cancer[cancer$ageGroup == ageGroupID, ]
+  x <- cancerX2[cancerX2$ageGroup == ageGroupID, ]
+  
+  # str(x)
   
   # Then sum all of the data by cancer type
-  x2 <- aggregate(. ~ cancer, data = x, FUN=sum)
+  x2 <- aggregate(. ~ cancerSite, data = x, FUN=sum)
+  
+  # str(x2)
   
   # Remove cancer types with no data (non-existant 
   # species in population of interest)
-  x3 <- x2$cancerByAge[which(x2$cancerByAge != 0)]
+  x3 <- x2$numberOfCases[which(x2$numberOfCases != 0)]
+  
+  # str(x3)
   
   # Calculate the evenness and print to the console
   x4 <- GetEvenness(x3)
   print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
 }
+
+x <- lapply(1:19, CancerEvennessX)
 ```
 
 
-With the above function, we can now easily calculate the evenness for each age group.
+##Evenness of 69 Cancer Subtypes is near 70%
+This code chunk subsets the data to look not at 15 categories of cancer, but at each of the 69 individual cancer subtypes available in the data.
+
 ```{r}
-x <- lapply(1:19, CancerEvenness)
+# Helper Function
+CancerCleaning <- function(site) {
+  which(cancerX$cancerSite == site)
+}
+
+# vector to be used in function
+vector <- c(4, 5, 8, 13, 16, 17, 18, 19, 20, 21, 23, 35, 41, 42, 48, 49, 50, 58, 68, 69, 70, 71, 73, 74, 75, 76, 77, 86, 87, 88, 89, 100, 106, 108, 109, 110, 11, 112, 113, 115, 116, 117, 125, 132, 133, 145, 148, 150, 151, 152, 158, 160, 161, 162, 163, 172, 174, 183, 184, 200, 210, 211, 213, 217, 224, 225, 226, 242, 243)
+
+# Create the desired data frame outside of the function
+z <- unlist(lapply(vector, CancerCleaning))
+cancerX2 <- cancerX[z, c(2:4)]
+
+CancerEvennessX <- function(ageGroupID) {
+  # First subset the cancer data frame by the ageGroup column
+  x <- cancerX2[cancerX2$ageGroup == ageGroupID, ]
+  
+  # str(x)
+  
+  # Then sum all of the data by cancer type
+  x2 <- aggregate(. ~ cancerSite, data = x, FUN=sum)
+  
+  # str(x2)
+  
+  # Remove cancer types with no data (non-existant 
+  # species in population of interest)
+  x3 <- x2$numberOfCases[which(x2$numberOfCases != 0)]
+  
+  # str(x3)
+  
+  # Calculate the evenness and print to the console
+  x4 <- GetEvenness(x3)
+  print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
+}
+
+x <- lapply(1:19, CancerEvennessX)
 ```
+
+----------------------
+##Appendix:
+Sanity check to be sure I understand the data structure.
+
+From the dictionary, Tongue (C01-02) should be coded as cancerSite number 5. 
+
+The Tongue cancer site should be a summation of the next two cancer sites (6 and 7), which correspond to the base of the tongue (6) and other unspecified parts (7).
+
+To test if this is true, I can subset the data and sum the number of cases.
+
+```{r}
+
+z <- cancerX[which(cancerX$cancerSite == 5), c(2, 4)]
+sum1 <- sum(z$numberOfCases)
+
+p <- cancerX[which(cancerX$cancerSite == 6), c(2, 4)]
+q <- cancerX[which(cancerX$cancerSite == 7), c(2, 4)]
+sum2 <- sum(p$numberOfCases, q$numberOfCases)
+
+sum1 == sum2
+```
+
+Thankfully, this is the case. So I do understand the data.

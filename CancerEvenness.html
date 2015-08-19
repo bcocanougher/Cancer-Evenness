@@ -10,7 +10,7 @@
 
 <meta name="author" content="Benjamin Cocanougher" />
 
-<meta name="date" content="2015-08-17" />
+<meta name="date" content="2015-08-19" />
 
 <title>Cancer Evenness Replication</title>
 
@@ -64,30 +64,48 @@ img {
 <div id="header">
 <h1 class="title">Cancer Evenness Replication</h1>
 <h4 class="author"><em>Benjamin Cocanougher</em></h4>
-<h4 class="date"><em>August 17, 2015</em></h4>
+<h4 class="date"><em>August 19, 2015</em></h4>
 </div>
 
 
+<<<<<<< HEAD
+<div id="introduction" class="section level2">
+<h2>Introduction:</h2>
+<p>Large epidemiological datasets are available for analyzing the types and rates of cancer worldwide. This analysis will attempt to apply information theory to epidemiology.</p>
+<p>I will be using equations derived by <a href="http://alum.mit.edu/www/toms">Thomas Schneider</a> to calculate the equivalent of ecological evenness. In this analysis I am considering the population to be cancer types and number of individual species in the population to be number of cases of each cancer type.</p>
+</div>
+<div id="data-analysis" class="section level2">
+<h2>Data Analysis:</h2>
+<p>The data used for this analysis comes from the <a href="http://ci5.iarc.fr/CI5I-X/Pages/download.aspx">International Agency for Research on Cancer</a>. Specifically we will look at the most recent volume X data. The Volume X data can be downloaded from the IARC by clicking <a href="http://ci5.iarc.fr/CI5-X/CI5-Xd.zip">here</a>. The data from the downloaded file will contain a larger number of small .csv files.</p>
+<p>The huge list of .csv files in the IARC data was converted to a single .csv file using the following unix command after changing to the directory containing the files:</p>
+<p>cat *.csv &gt; CI5Xd.csv</p>
+<p>(The files can also be read directly into R, but it is much slower.)</p>
+<p>You can either collapse the files together yourself using the above command, or grab the combined files from the <a href="https://github.com/bcoke/Cancer-Evenness">github repo</a>.</p>
+<p>First we need to read the data into R.</p>
+<pre class="r"><code># You will need to edit this to the working 
+# directory containing the CI5Xd.csv file
+setwd(&quot;/Users/bencocanougher/Desktop/&quot;)
+=======
 <p>The data used for this analysis comes from the <a href="http://ci5.iarc.fr/CI5I-X/Pages/download.aspx">International Agency for Research on Cancer</a>. Specifically we will look at the yellow volume VII data. The CI5VII.csv file can be downloaded <a href="http://ci5.iarc.fr/CI5I-X/old/vol7/CI5-VII_software.zip">here</a> from the IARC. Alternatively, the files, including this analysis, are available in this <a href="https://github.com/bcoke/Cancer-Evenness">github repo</a>.</p>
 <pre class="r"><code># You will need to edit this to the working 
 # directory containing the CI5VII.csv file
 setwd(&quot;/Users/bencocanougher/Desktop/CI5-VIId&quot;)
+>>>>>>> parent of b275c02... Fixed link to data
 
-if (!exists(&quot;cancer&quot;)) {
-  cancer &lt;- read.csv(&quot;CI5VII.csv&quot;)
+if (!exists(&quot;cancerX&quot;)) {
+  cancerX &lt;- read.csv(&quot;CI5Xd.csv&quot;)
 }
 
-colnames(cancer) &lt;- c(&quot;pop&quot;, &quot;sex&quot;, &quot;cancer&quot;, &quot;ageGroup&quot;,
-                      &quot;cancerByAge&quot;, &quot;PersonYearsatRisk&quot;)
+colnames(cancerX) &lt;- c(&quot;sex&quot;, &quot;cancerSite&quot;, &quot;ageGroup&quot;,
+                       &quot;numberOfCases&quot;, &quot;PersonYearsAtRisk&quot;)
 
-str(cancer)</code></pre>
-<pre><code>## 'data.frame':    1905623 obs. of  6 variables:
-##  $ pop              : int  1 1 1 1 1 1 1 1 1 1 ...
+str(cancerX)</code></pre>
+<pre><code>## 'data.frame':    7844111 obs. of  5 variables:
 ##  $ sex              : int  1 1 1 1 1 1 1 1 1 1 ...
-##  $ cancer           : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ cancerSite       : int  1 1 1 1 1 1 1 1 1 1 ...
 ##  $ ageGroup         : int  2 3 4 5 6 7 8 9 10 11 ...
-##  $ cancerByAge      : int  38 27 30 21 28 39 40 43 57 87 ...
-##  $ PersonYearsatRisk: int  360496 290060 227276 201600 168448 142544 106744 55392 52252 52748 ...</code></pre>
+##  $ numberOfCases    : int  23 38 56 72 64 86 102 131 168 221 ...
+##  $ PersonYearsAtRisk: int  454935 414130 467301 340529 288300 234561 214254 210409 184422 81751 ...</code></pre>
 <p>GetEvenness function is defined:</p>
 <pre class="r"><code>GetEvenness &lt;- function(vector) {
   n &lt;- sum(vector)
@@ -102,100 +120,257 @@ str(cancer)</code></pre>
   H/Hmax
   #print(c(&quot;evenness:&quot;, round(H/Hmax,3)), quote = F)
 }</code></pre>
-<p>Next I define a function to subset the data and calculate the evenness.</p>
-<pre class="r"><code>CancerEvenness &lt;- function(ageGroupID) {
+<p>A description of the code describing the cancerSite integers can be found <a href="http://ci5.iarc.fr/CI5I-X/Pages/cancer_vol10.aspx">here</a>. It is a list of ICD-10 codes that were converted to the cancerSite vector identifiers. These idenfiers include several many summation codes, and thus must be subset appropriately.</p>
+</div>
+<div id="evenness-of-15-organ-categories-is-near-80" class="section level2">
+<h2>Evenness of 15 Organ Categories is near 80%</h2>
+<p>The following code chunk subsets the ID codes into 15 big categories, which correspond to cancer incidence at the organ level.</p>
+<pre class="r"><code># Helper Function
+CancerCleaning &lt;- function(site) {
+  which(cancerX$cancerSite == site)
+}
+
+# vector to be used in function
+vector &lt;- c(3, 22, 72, 89, 99, 107, 113, 114, 149,
+            159, 173, 199, 212, 242, 243)
+
+# Create the desired data frame outside of the function
+z &lt;- unlist(lapply(vector, CancerCleaning))
+cancerX2 &lt;- cancerX[z, c(2:4)]
+
+CancerEvennessX &lt;- function(ageGroupID) {
   # First subset the cancer data frame by the ageGroup column
-  x &lt;- cancer[cancer$ageGroup == ageGroupID, ]
+  x &lt;- cancerX2[cancerX2$ageGroup == ageGroupID, ]
+  
+  # str(x)
   
   # Then sum all of the data by cancer type
-  x2 &lt;- aggregate(. ~ cancer, data = x, FUN=sum)
+  x2 &lt;- aggregate(. ~ cancerSite, data = x, FUN=sum)
+  
+  # str(x2)
   
   # Remove cancer types with no data (non-existant 
   # species in population of interest)
-  x3 &lt;- x2$cancerByAge[which(x2$cancerByAge != 0)]
+  x3 &lt;- x2$numberOfCases[which(x2$numberOfCases != 0)]
+  
+  # str(x3)
   
   # Calculate the evenness and print to the console
   x4 &lt;- GetEvenness(x3)
   print(paste0(&quot;Evenness of Age Group &quot;, ageGroupID,&quot; = &quot;, x4), quote = FALSE)
-}</code></pre>
-<p>With the above function, we can now easily calculate the evenness for each age group.</p>
-<pre class="r"><code>x &lt;- lapply(1:19, CancerEvenness)</code></pre>
+}
+
+x &lt;- lapply(1:19, CancerEvennessX)</code></pre>
 <pre><code>## [1] 
-## [1] sum:   159709
-## [1] s:  209
-## [1] Evenness of Age Group 1 = 0.566157995713325
+## [1] sum:   280906
+## [1] s: 15
+## [1] Evenness of Age Group 1 = 0.648442713060927
 ## [1] 
-## [1] sum:  99483
-## [1] s:  191
-## [1] Evenness of Age Group 2 = 0.58068341787339
+## [1] sum:   154840
+## [1] s: 15
+## [1] Evenness of Age Group 2 = 0.591522069571527
 ## [1] 
-## [1] sum:  95202
-## [1] s:  217
-## [1] Evenness of Age Group 3 = 0.602481965483437
+## [1] sum:   182860
+## [1] s: 15
+## [1] Evenness of Age Group 3 = 0.685671364183226
 ## [1] 
-## [1] sum:   151326
-## [1] s:  235
-## [1] Evenness of Age Group 4 = 0.617888676653391
+## [1] sum:   301080
+## [1] s: 15
+## [1] Evenness of Age Group 4 = 0.780131914954125
 ## [1] 
-## [1] sum:   238579
-## [1] s:  245
-## [1] Evenness of Age Group 5 = 0.620674967187953
+## [1] sum:   474382
+## [1] s: 15
+## [1] Evenness of Age Group 5 = 0.830107652812051
 ## [1] 
-## [1] sum:   406759
-## [1] s:  247
-## [1] Evenness of Age Group 6 = 0.617209672918896
+## [1] sum:   741148
+## [1] s: 15
+## [1] Evenness of Age Group 6 = 0.866675837885188
 ## [1] 
-## [1] sum:   622641
-## [1] s:  247
-## [1] Evenness of Age Group 7 = 0.608697145413784
+## [1] sum:    1187000
+## [1] s: 15
+## [1] Evenness of Age Group 7 = 0.872988014539238
 ## [1] 
-## [1] sum:   896640
-## [1] s:  251
-## [1] Evenness of Age Group 8 = 0.598762870222002
+## [1] sum:    1909954
+## [1] s: 15
+## [1] Evenness of Age Group 8 = 0.855287996620204
 ## [1] 
-## [1] sum:    1293599
-## [1] s:  251
-## [1] Evenness of Age Group 9 = 0.58928794323589
+## [1] sum:    3299688
+## [1] s: 15
+## [1] Evenness of Age Group 9 = 0.836012323237511
 ## [1] 
-## [1] sum:    1672630
-## [1] s:  251
-## [1] Evenness of Age Group 10 = 0.586840406557542
+## [1] sum:    5203656
+## [1] s: 15
+## [1] Evenness of Age Group 10 = 0.835191184309397
 ## [1] 
-## [1] sum:    2265986
-## [1] s:  252
-## [1] Evenness of Age Group 11 = 0.591150367982097
+## [1] sum:    7345106
+## [1] s: 15
+## [1] Evenness of Age Group 11 = 0.839214219702342
 ## [1] 
-## [1] sum:    3229949
-## [1] s:  250
-## [1] Evenness of Age Group 12 = 0.589802150962932
+## [1] sum:    9685410
+## [1] s: 15
+## [1] Evenness of Age Group 12 = 0.830575194970572
 ## [1] 
-## [1] sum:    4558071
-## [1] s:  249
-## [1] Evenness of Age Group 13 = 0.584427692899203
+## [1] sum:     10982408
+## [1] s: 15
+## [1] Evenness of Age Group 13 = 0.814759416263448
 ## [1] 
-## [1] sum:    5630421
-## [1] s:  250
-## [1] Evenness of Age Group 14 = 0.578606832984657
+## [1] sum:     12223210
+## [1] s: 15
+## [1] Evenness of Age Group 14 = 0.801584087337845
 ## [1] 
-## [1] sum:    5339125
-## [1] s:  248
-## [1] Evenness of Age Group 15 = 0.57464065717195
+## [1] sum:     12287974
+## [1] s: 15
+## [1] Evenness of Age Group 15 = 0.798440288169883
 ## [1] 
-## [1] sum:    4994519
-## [1] s:  249
-## [1] Evenness of Age Group 16 = 0.571699276349407
+## [1] sum:     11789330
+## [1] s: 15
+## [1] Evenness of Age Group 16 = 0.801842761787105
 ## [1] 
-## [1] sum:    3457295
-## [1] s:  246
-## [1] Evenness of Age Group 17 = 0.570592074396513
+## [1] sum:    8919372
+## [1] s: 15
+## [1] Evenness of Age Group 17 = 0.805383686557899
 ## [1] 
-## [1] sum:    2394363
-## [1] s:  247
-## [1] Evenness of Age Group 18 = 0.568233778293104
+## [1] sum:    6837690
+## [1] s: 15
+## [1] Evenness of Age Group 18 = 0.803176251377235
 ## [1] 
-## [1] sum:  28184
-## [1] s:  216
-## [1] Evenness of Age Group 19 = 0.609125223458184</code></pre>
+## [1] sum:  55100
+## [1] s: 15
+## [1] Evenness of Age Group 19 = 0.773868929441008</code></pre>
+</div>
+<div id="evenness-of-69-cancer-subtypes-is-near-70" class="section level2">
+<h2>Evenness of 69 Cancer Subtypes is near 70%</h2>
+<p>This code chunk subsets the data to look not at 15 categories of cancer, but at each of the 69 individual cancer subtypes available in the data.</p>
+<pre class="r"><code># Helper Function
+CancerCleaning &lt;- function(site) {
+  which(cancerX$cancerSite == site)
+}
+
+# vector to be used in function
+vector &lt;- c(4, 5, 8, 13, 16, 17, 18, 19, 20, 21, 23, 35, 41, 42, 48, 49, 50, 58, 68, 69, 70, 71, 73, 74, 75, 76, 77, 86, 87, 88, 89, 100, 106, 108, 109, 110, 11, 112, 113, 115, 116, 117, 125, 132, 133, 145, 148, 150, 151, 152, 158, 160, 161, 162, 163, 172, 174, 183, 184, 200, 210, 211, 213, 217, 224, 225, 226, 242, 243)
+
+# Create the desired data frame outside of the function
+z &lt;- unlist(lapply(vector, CancerCleaning))
+cancerX2 &lt;- cancerX[z, c(2:4)]
+
+CancerEvennessX &lt;- function(ageGroupID) {
+  # First subset the cancer data frame by the ageGroup column
+  x &lt;- cancerX2[cancerX2$ageGroup == ageGroupID, ]
+  
+  # str(x)
+  
+  # Then sum all of the data by cancer type
+  x2 &lt;- aggregate(. ~ cancerSite, data = x, FUN=sum)
+  
+  # str(x2)
+  
+  # Remove cancer types with no data (non-existant 
+  # species in population of interest)
+  x3 &lt;- x2$numberOfCases[which(x2$numberOfCases != 0)]
+  
+  # str(x3)
+  
+  # Calculate the evenness and print to the console
+  x4 &lt;- GetEvenness(x3)
+  print(paste0(&quot;Evenness of Age Group &quot;, ageGroupID,&quot; = &quot;, x4), quote = FALSE)
+}
+
+x &lt;- lapply(1:19, CancerEvennessX)</code></pre>
+<pre><code>## [1] 
+## [1] sum:   275994
+## [1] s: 68
+## [1] Evenness of Age Group 1 = 0.518958765092867
+## [1] 
+## [1] sum:   154202
+## [1] s: 62
+## [1] Evenness of Age Group 2 = 0.520307462273511
+## [1] 
+## [1] sum:   182554
+## [1] s: 67
+## [1] Evenness of Age Group 3 = 0.598742178869825
+## [1] 
+## [1] sum:   300880
+## [1] s: 69
+## [1] Evenness of Age Group 4 = 0.661810063142057
+## [1] 
+## [1] sum:   473782
+## [1] s: 69
+## [1] Evenness of Age Group 5 = 0.688683516618552
+## [1] 
+## [1] sum:   740346
+## [1] s: 69
+## [1] Evenness of Age Group 6 = 0.709474889904872
+## [1] 
+## [1] sum:    1185878
+## [1] s: 69
+## [1] Evenness of Age Group 7 = 0.721213204849441
+## [1] 
+## [1] sum:    1908034
+## [1] s: 69
+## [1] Evenness of Age Group 8 = 0.721086399677296
+## [1] 
+## [1] sum:    3297388
+## [1] s: 69
+## [1] Evenness of Age Group 9 = 0.720915494073223
+## [1] 
+## [1] sum:    5201218
+## [1] s: 69
+## [1] Evenness of Age Group 10 = 0.729127261731701
+## [1] 
+## [1] sum:    7341582
+## [1] s: 69
+## [1] Evenness of Age Group 11 = 0.737577218077924
+## [1] 
+## [1] sum:    9679080
+## [1] s: 69
+## [1] Evenness of Age Group 12 = 0.722731344909576
+## [1] 
+## [1] sum:     10972032
+## [1] s: 69
+## [1] Evenness of Age Group 13 = 0.704512415746358
+## [1] 
+## [1] sum:     12209868
+## [1] s: 69
+## [1] Evenness of Age Group 14 = 0.694755434093302
+## [1] 
+## [1] sum:     12273386
+## [1] s: 69
+## [1] Evenness of Age Group 15 = 0.697112296996015
+## [1] 
+## [1] sum:     11774382
+## [1] s: 69
+## [1] Evenness of Age Group 16 = 0.705901867585838
+## [1] 
+## [1] sum:    8909244
+## [1] s: 69
+## [1] Evenness of Age Group 17 = 0.718995594914796
+## [1] 
+## [1] sum:    6833568
+## [1] s: 69
+## [1] Evenness of Age Group 18 = 0.729574872741235
+## [1] 
+## [1] sum:  55198
+## [1] s: 69
+## [1] Evenness of Age Group 19 = 0.673668561981316</code></pre>
+<hr />
+</div>
+<div id="appendix" class="section level2">
+<h2>Appendix:</h2>
+<p>Sanity check to be sure I understand the data structure.</p>
+<p>From the dictionary, Tongue (C01-02) should be coded as cancerSite number 5.</p>
+<p>The Tongue cancer site should be a summation of the next two cancer sites (6 and 7), which correspond to the base of the tongue (6) and other unspecified parts (7).</p>
+<p>To test if this is true, I can subset the data and sum the number of cases.</p>
+<pre class="r"><code>z &lt;- cancerX[which(cancerX$cancerSite == 5), c(2, 4)]
+sum1 &lt;- sum(z$numberOfCases)
+
+p &lt;- cancerX[which(cancerX$cancerSite == 6), c(2, 4)]
+q &lt;- cancerX[which(cancerX$cancerSite == 7), c(2, 4)]
+sum2 &lt;- sum(p$numberOfCases, q$numberOfCases)
+
+sum1 == sum2</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Thankfully, this is the case. So I do understand the data.</p>
+</div>
 
 
 </div>
