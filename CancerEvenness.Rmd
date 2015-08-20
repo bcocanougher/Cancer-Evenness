@@ -110,11 +110,22 @@ CancerEvennessX <- function(ageGroupID) {
 
 x <- unlist(lapply(1:19, CancerEvennessX))
 
+par(las=2) #rotates x-axis labels
 barplot(x,
         col = colorRampPalette(brewer.pal(9,"Reds"))(19),
         main = "Cancer Evenness (By Organ)",
         ylab = "Evenness",
-        xlab = "Age Group")
+        names.arg = c("ages 0-4","ages 5-9",
+                      "ages 10-14","ages 15-19",
+                      "ages 20-24","ages 25-29",
+                      "ages 30-34","ages 35-39",
+                      "ages 40-44","ages 45-49",
+                      "ages 50-54","ages 55-59",
+                      "ages 60-64","ages 65-69",
+                      "ages 70-74","ages 75-79",
+                      "ages 80-84","ages 85+",
+                      "unknown")
+        )
 ```
 
 
@@ -159,11 +170,22 @@ CancerEvennessX <- function(ageGroupID) {
 
 x <- unlist(lapply(1:19, CancerEvennessX))
 
+par(las=2) #rotates x-axis labels
 barplot(x,
         col = colorRampPalette(brewer.pal(9,"Greens"))(19),
         main = "Cancer Evenness (By Cancer Type)",
         ylab = "Evenness",
-        xlab = "Age Group")
+        names.arg = c("ages 0-4","ages 5-9",
+                      "ages 10-14","ages 15-19",
+                      "ages 20-24","ages 25-29",
+                      "ages 30-34","ages 35-39",
+                      "ages 40-44","ages 45-49",
+                      "ages 50-54","ages 55-59",
+                      "ages 60-64","ages 65-69",
+                      "ages 70-74","ages 75-79",
+                      "ages 80-84","ages 85+",
+                      "unknown")
+        )
 ```
 
 ----------------------
