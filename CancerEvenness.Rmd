@@ -4,14 +4,17 @@ author: "Benjamin Cocanougher"
 date: "August 19, 2015"
 output: html_document
 ---
+
+```{r}
+suppressMessages(require(RColorBrewer))
+```
+
+
 ##Introduction:
 Large epidemiological datasets are available for analyzing the types and rates of cancer worldwide. This analysis will attempt to apply information theory to epidemiology.
 
-<<<<<<< HEAD
 I will be using equations derived by [Thomas Schneider](http://alum.mit.edu/www/toms) to calculate the equivalent of ecological evenness. In this analysis I am considering the population to be cancer types and number of individual species in the population to be number of cases of each cancer type.
-=======
-The data used for this analysis comes from the [International Agency for Research on Cancer](http://ci5.iarc.fr/CI5I-X/Pages/download.aspx). Specifically we will look at the yellow volume VII data. The CI5VII.csv file can be downloaded [here](http://ci5.iarc.fr/CI5I-X/old/vol7/CI5-VII_software.zip) from the IARC. Alternatively, the files, including this analysis, are available in this [github repo](https://github.com/bcoke/Cancer-Evenness).
->>>>>>> parent of b275c02... Fixed link to data
+
 
 ##Data Analysis:
 The data used for this analysis comes from the [International Agency for Research on Cancer](http://ci5.iarc.fr/CI5I-X/Pages/download.aspx). Specifically we will look at the most recent volume X data. The Volume X data can be downloaded from the IARC by clicking [here](http://ci5.iarc.fr/CI5-X/CI5-Xd.zip). The data from the downloaded file will contain a larger number of small .csv files.
@@ -30,13 +33,9 @@ First we need to read the data into R.
 ```{r, echo = TRUE, cache=TRUE}
 
 # You will need to edit this to the working 
-<<<<<<< HEAD
+
 # directory containing the CI5Xd.csv file
 setwd("/Users/bencocanougher/Desktop/")
-=======
-# directory containing the CI5VII.csv file
-setwd("/Users/bencocanougher/Desktop/CI5-VIId")
->>>>>>> parent of b275c02... Fixed link to data
 
 if (!exists("cancerX")) {
   cancerX <- read.csv("CI5Xd.csv")
@@ -105,10 +104,16 @@ CancerEvennessX <- function(ageGroupID) {
   
   # Calculate the evenness and print to the console
   x4 <- GetEvenness(x3)
-  print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
+  #print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
 }
 
-x <- lapply(1:19, CancerEvennessX)
+x <- unlist(lapply(1:19, CancerEvennessX))
+
+barplot(x,
+        col = colorRampPalette(brewer.pal(9,"Reds"))(19),
+        main = "Cancer Evenness (By Organ)",
+        ylab = "Evenness",
+        xlab = "Age Group")
 ```
 
 
@@ -147,10 +152,16 @@ CancerEvennessX <- function(ageGroupID) {
   
   # Calculate the evenness and print to the console
   x4 <- GetEvenness(x3)
-  print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
+  #print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
 }
 
-x <- lapply(1:19, CancerEvennessX)
+x <- unlist(lapply(1:19, CancerEvennessX))
+
+barplot(x,
+        col = colorRampPalette(brewer.pal(9,"Greens"))(19),
+        main = "Cancer Evenness (By Cancer Type)",
+        ylab = "Evenness",
+        xlab = "Age Group")
 ```
 
 ----------------------
