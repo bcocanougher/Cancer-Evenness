@@ -105,9 +105,9 @@ str(cancerX)</code></pre>
 <pre class="r"><code>GetEvenness &lt;- function(vector) {
   n &lt;- sum(vector)
   s &lt;- length(vector)
-  print(&quot;&quot;, quote = F)
-  print(c(&quot;sum:&quot;,n), quote = F)
-  print(c(&quot;s:&quot;,s), quote = F)
+  #print(&quot;&quot;, quote = F)
+  #print(c(&quot;sum:&quot;,n), quote = F)
+  #print(c(&quot;s:&quot;,s), quote = F)
   # Basharin's small-sample correction:
   ens &lt;- (s-1)/(2*log(2)*n);
   H &lt;- -sum((vector/n)*log2(vector/n)) + ens
@@ -152,67 +152,30 @@ CancerEvennessX &lt;- function(ageGroupID) {
   
   # Calculate the evenness and print to the console
   x4 &lt;- GetEvenness(x3)
-  #print(paste0(&quot;Evenness of Age Group &quot;, ageGroupID,&quot; = &quot;, x4), quote = FALSE)
+  print(paste0(&quot;Evenness of Age Group &quot;, ageGroupID,&quot; = &quot;, x4), quote = FALSE)
+  x4
 }
 
 x &lt;- unlist(lapply(1:19, CancerEvennessX))</code></pre>
-<pre><code>## [1] 
-## [1] sum:   280906
-## [1] s: 15
-## [1] 
-## [1] sum:   154840
-## [1] s: 15
-## [1] 
-## [1] sum:   182860
-## [1] s: 15
-## [1] 
-## [1] sum:   301080
-## [1] s: 15
-## [1] 
-## [1] sum:   474382
-## [1] s: 15
-## [1] 
-## [1] sum:   741148
-## [1] s: 15
-## [1] 
-## [1] sum:    1187000
-## [1] s: 15
-## [1] 
-## [1] sum:    1909954
-## [1] s: 15
-## [1] 
-## [1] sum:    3299688
-## [1] s: 15
-## [1] 
-## [1] sum:    5203656
-## [1] s: 15
-## [1] 
-## [1] sum:    7345106
-## [1] s: 15
-## [1] 
-## [1] sum:    9685410
-## [1] s: 15
-## [1] 
-## [1] sum:     10982408
-## [1] s: 15
-## [1] 
-## [1] sum:     12223210
-## [1] s: 15
-## [1] 
-## [1] sum:     12287974
-## [1] s: 15
-## [1] 
-## [1] sum:     11789330
-## [1] s: 15
-## [1] 
-## [1] sum:    8919372
-## [1] s: 15
-## [1] 
-## [1] sum:    6837690
-## [1] s: 15
-## [1] 
-## [1] sum:  55100
-## [1] s: 15</code></pre>
+<pre><code>## [1] Evenness of Age Group 1 = 0.648442713060927
+## [1] Evenness of Age Group 2 = 0.591522069571527
+## [1] Evenness of Age Group 3 = 0.685671364183226
+## [1] Evenness of Age Group 4 = 0.780131914954125
+## [1] Evenness of Age Group 5 = 0.830107652812051
+## [1] Evenness of Age Group 6 = 0.866675837885188
+## [1] Evenness of Age Group 7 = 0.872988014539238
+## [1] Evenness of Age Group 8 = 0.855287996620204
+## [1] Evenness of Age Group 9 = 0.836012323237511
+## [1] Evenness of Age Group 10 = 0.835191184309397
+## [1] Evenness of Age Group 11 = 0.839214219702342
+## [1] Evenness of Age Group 12 = 0.830575194970572
+## [1] Evenness of Age Group 13 = 0.814759416263448
+## [1] Evenness of Age Group 14 = 0.801584087337845
+## [1] Evenness of Age Group 15 = 0.798440288169883
+## [1] Evenness of Age Group 16 = 0.801842761787105
+## [1] Evenness of Age Group 17 = 0.805383686557899
+## [1] Evenness of Age Group 18 = 0.803176251377235
+## [1] Evenness of Age Group 19 = 0.773868929441008</code></pre>
 <pre class="r"><code>barplot(x,
         col = colorRampPalette(brewer.pal(9,&quot;Reds&quot;))(19),
         main = &quot;Cancer Evenness (By Organ)&quot;,
@@ -254,67 +217,30 @@ CancerEvennessX &lt;- function(ageGroupID) {
   
   # Calculate the evenness and print to the console
   x4 &lt;- GetEvenness(x3)
-  #print(paste0(&quot;Evenness of Age Group &quot;, ageGroupID,&quot; = &quot;, x4), quote = FALSE)
+  print(paste0(&quot;Evenness of Age Group &quot;, ageGroupID,&quot; = &quot;, x4), quote = FALSE)
+  x4
 }
 
 x &lt;- unlist(lapply(1:19, CancerEvennessX))</code></pre>
-<pre><code>## [1] 
-## [1] sum:   275994
-## [1] s: 68
-## [1] 
-## [1] sum:   154202
-## [1] s: 62
-## [1] 
-## [1] sum:   182554
-## [1] s: 67
-## [1] 
-## [1] sum:   300880
-## [1] s: 69
-## [1] 
-## [1] sum:   473782
-## [1] s: 69
-## [1] 
-## [1] sum:   740346
-## [1] s: 69
-## [1] 
-## [1] sum:    1185878
-## [1] s: 69
-## [1] 
-## [1] sum:    1908034
-## [1] s: 69
-## [1] 
-## [1] sum:    3297388
-## [1] s: 69
-## [1] 
-## [1] sum:    5201218
-## [1] s: 69
-## [1] 
-## [1] sum:    7341582
-## [1] s: 69
-## [1] 
-## [1] sum:    9679080
-## [1] s: 69
-## [1] 
-## [1] sum:     10972032
-## [1] s: 69
-## [1] 
-## [1] sum:     12209868
-## [1] s: 69
-## [1] 
-## [1] sum:     12273386
-## [1] s: 69
-## [1] 
-## [1] sum:     11774382
-## [1] s: 69
-## [1] 
-## [1] sum:    8909244
-## [1] s: 69
-## [1] 
-## [1] sum:    6833568
-## [1] s: 69
-## [1] 
-## [1] sum:  55198
-## [1] s: 69</code></pre>
+<pre><code>## [1] Evenness of Age Group 1 = 0.518958765092867
+## [1] Evenness of Age Group 2 = 0.520307462273511
+## [1] Evenness of Age Group 3 = 0.598742178869825
+## [1] Evenness of Age Group 4 = 0.661810063142057
+## [1] Evenness of Age Group 5 = 0.688683516618552
+## [1] Evenness of Age Group 6 = 0.709474889904872
+## [1] Evenness of Age Group 7 = 0.721213204849441
+## [1] Evenness of Age Group 8 = 0.721086399677296
+## [1] Evenness of Age Group 9 = 0.720915494073223
+## [1] Evenness of Age Group 10 = 0.729127261731701
+## [1] Evenness of Age Group 11 = 0.737577218077924
+## [1] Evenness of Age Group 12 = 0.722731344909576
+## [1] Evenness of Age Group 13 = 0.704512415746358
+## [1] Evenness of Age Group 14 = 0.694755434093302
+## [1] Evenness of Age Group 15 = 0.697112296996015
+## [1] Evenness of Age Group 16 = 0.705901867585838
+## [1] Evenness of Age Group 17 = 0.718995594914796
+## [1] Evenness of Age Group 18 = 0.729574872741235
+## [1] Evenness of Age Group 19 = 0.673668561981316</code></pre>
 <pre class="r"><code>barplot(x,
         col = colorRampPalette(brewer.pal(9,&quot;Greens&quot;))(19),
         main = &quot;Cancer Evenness (By Cancer Type)&quot;,
