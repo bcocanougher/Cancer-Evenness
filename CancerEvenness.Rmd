@@ -113,7 +113,7 @@ x <- unlist(lapply(1:19, CancerEvennessX))
 par(las=2) #rotates x-axis labels
 barplot(x,
         col = colorRampPalette(brewer.pal(9,"Reds"))(19),
-        main = "Cancer Evenness (By Organ)",
+        main = "Volume X Cancer Evenness (By Organ)",
         ylab = "Evenness",
         names.arg = c("ages 0-4","ages 5-9",
                       "ages 10-14","ages 15-19",
@@ -173,7 +173,7 @@ x <- unlist(lapply(1:19, CancerEvennessX))
 par(las=2) #rotates x-axis labels
 barplot(x,
         col = colorRampPalette(brewer.pal(9,"Greens"))(19),
-        main = "Cancer Evenness (By Cancer Type)",
+        main = "Volume X Cancer Evenness (By Cancer Type)",
         ylab = "Evenness",
         names.arg = c("ages 0-4","ages 5-9",
                       "ages 10-14","ages 15-19",
@@ -187,6 +187,147 @@ barplot(x,
                       "unknown")
         )
 ```
+
+#Volume IX
+This same analysis is easily extended to the Volume IX dataset also available from the IARC.
+
+```{r, echo = TRUE, cache=TRUE}
+
+# You will need to edit this to the working 
+
+# directory containing the CI5Xd.csv file
+setwd("/Users/bencocanougher/Desktop/")
+
+if (!exists("cancerX")) {
+  cancerX <- read.csv("CI5IXd.csv")
+}
+
+colnames(cancerX) <- c("sex", "cancerSite", "ageGroup",
+                       "numberOfCases", "PersonYearsAtRisk")
+
+str(cancerX)
+```
+
+##Evenness of 15 Organ Categories is near 80%
+The following code chunk subsets the ID codes into 15 big categories, which correspond to cancer incidence at the organ level.
+
+```{r}
+# Helper Function
+CancerCleaning <- function(site) {
+  which(cancerX$cancerSite == site)
+}
+
+# vector to be used in function
+vector <- c(3, 22, 72, 89, 99, 107, 113, 114, 149,
+            159, 173, 199, 212, 242, 243)
+
+# Create the desired data frame outside of the function
+z <- unlist(lapply(vector, CancerCleaning))
+cancerX2 <- cancerX[z, c(2:4)]
+
+CancerEvennessX <- function(ageGroupID) {
+  # First subset the cancer data frame by the ageGroup column
+  x <- cancerX2[cancerX2$ageGroup == ageGroupID, ]
+  
+  # str(x)
+  
+  # Then sum all of the data by cancer type
+  x2 <- aggregate(. ~ cancerSite, data = x, FUN=sum)
+  
+  # str(x2)
+  
+  # Remove cancer types with no data (non-existant 
+  # species in population of interest)
+  x3 <- x2$numberOfCases[which(x2$numberOfCases != 0)]
+  
+  # str(x3)
+  
+  # Calculate the evenness and print to the console
+  x4 <- GetEvenness(x3)
+  print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
+  x4
+}
+
+x <- unlist(lapply(1:19, CancerEvennessX))
+
+par(las=2) #rotates x-axis labels
+barplot(x,
+        col = colorRampPalette(brewer.pal(9,"Oranges"))(19),
+        main = "Volume IX Cancer Evenness (By Organ)",
+        ylab = "Evenness",
+        names.arg = c("ages 0-4","ages 5-9",
+                      "ages 10-14","ages 15-19",
+                      "ages 20-24","ages 25-29",
+                      "ages 30-34","ages 35-39",
+                      "ages 40-44","ages 45-49",
+                      "ages 50-54","ages 55-59",
+                      "ages 60-64","ages 65-69",
+                      "ages 70-74","ages 75-79",
+                      "ages 80-84","ages 85+",
+                      "unknown")
+        )
+```
+
+
+##Evenness of Cancer Subtypes is near 70%
+This code chunk subsets the data to look not at 15 categories of cancer, but at each of the 69 individual cancer subtypes available in the data.
+
+```{r}
+# Helper Function
+CancerCleaning <- function(site) {
+  which(cancerX$cancerSite == site)
+}
+
+# vector to be used in function
+vector <- c(4, 5, 8, 13, 16, 17, 18, 19, 20, 21, 23, 35, 41, 42, 48, 49, 50, 58, 68, 69, 70, 71, 73, 74, 75, 76, 77, 86, 87, 88, 89, 100, 106, 108, 109, 110, 11, 112, 113, 115, 116, 117, 125, 132, 133, 145, 148, 150, 151, 152, 158, 160, 161, 162, 163, 172, 174, 183, 184, 200, 210, 211, 213, 217, 224, 225, 226, 242, 243)
+
+# Create the desired data frame outside of the function
+z <- unlist(lapply(vector, CancerCleaning))
+cancerX2 <- cancerX[z, c(2:4)]
+
+CancerEvennessX <- function(ageGroupID) {
+  # First subset the cancer data frame by the ageGroup column
+  x <- cancerX2[cancerX2$ageGroup == ageGroupID, ]
+  
+  # str(x)
+  
+  # Then sum all of the data by cancer type
+  x2 <- aggregate(. ~ cancerSite, data = x, FUN=sum)
+  
+  # str(x2)
+  
+  # Remove cancer types with no data (non-existant 
+  # species in population of interest)
+  x3 <- x2$numberOfCases[which(x2$numberOfCases != 0)]
+  
+  # str(x3)
+  
+  # Calculate the evenness and print to the console
+  x4 <- GetEvenness(x3)
+  print(paste0("Evenness of Age Group ", ageGroupID," = ", x4), quote = FALSE)
+  x4
+}
+
+x <- unlist(lapply(1:19, CancerEvennessX))
+
+par(las=2) #rotates x-axis labels
+barplot(x,
+        col = colorRampPalette(brewer.pal(9,"Blues"))(19),
+        main = "Volume IX Cancer Evenness (By Cancer Type)",
+        ylab = "Evenness",
+        names.arg = c("ages 0-4","ages 5-9",
+                      "ages 10-14","ages 15-19",
+                      "ages 20-24","ages 25-29",
+                      "ages 30-34","ages 35-39",
+                      "ages 40-44","ages 45-49",
+                      "ages 50-54","ages 55-59",
+                      "ages 60-64","ages 65-69",
+                      "ages 70-74","ages 75-79",
+                      "ages 80-84","ages 85+",
+                      "unknown")
+        )
+```
+
 
 ----------------------
 ##Appendix:
